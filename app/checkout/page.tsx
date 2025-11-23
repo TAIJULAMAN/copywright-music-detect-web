@@ -16,6 +16,8 @@ export default function CheckoutPage() {
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null)
   const [isProcessing, setIsProcessing] = useState(false)
   const [showSuccessModal, setShowSuccessModal] = useState(false)
+  const [promo, setPromo] = useState("")
+  const [discountPct, setDiscountPct] = useState<number>(0)
 
   useEffect(() => {
     // Load selected plan from session storage
@@ -38,6 +40,19 @@ export default function CheckoutPage() {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>
   }
 
+  const subtotal = selectedPlan.price
+  const discountAmount = Math.round((subtotal * discountPct) * 100) / 100
+  const total = Math.max(subtotal - discountAmount, 0)
+
+  const applyPromo = () => {
+    const code = promo.trim().toUpperCase()
+    if (code === "SAVE10" || code === "DISCOUNT10") {
+      setDiscountPct(0.1)
+    } else {
+      setDiscountPct(0)
+    }
+  }
+
   return (
     <>
       <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -48,13 +63,12 @@ export default function CheckoutPage() {
               Complete Your Payment to Receive the Results
             </h1>
             <p className="text-gray-600">
-              Pay ${selectedPlan.price} for {selectedPlan.name} or ${selectedPlan.price === 29 ? 39 : 29} for{" "}
-              {selectedPlan.name === "Basic Check" ? "Full Report" : "Basic Check"}
+              Pay $29 for a basic scan or $39 for a detailed report
             </p>
           </div>
 
           {/* Payment Card */}
-          <div className="bg-white rounded-2xl shadow-lg p-8 md:p-12 mb-8">
+          <div className="bg-white rounded-2xl shadow-lg ring-1 ring-black/5 p-8 md:p-10 mb-8">
             {/* Order Summary */}
             <div className="mb-8">
               <h2 className="text-xl font-bold text-gray-900 mb-6">You're About to Purchase</h2>
@@ -67,7 +81,7 @@ export default function CheckoutPage() {
 
                 <div className="flex justify-between items-center py-3 border-b border-gray-100">
                   <span className="text-gray-700">Price:</span>
-                  <span className="font-semibold text-purple-600 text-lg">${selectedPlan.price}</span>
+                  <span className="font-semibold text-[#d6322f] text-lg">${selectedPlan.price}</span>
                 </div>
 
                 <div className="flex justify-between items-center py-3 border-b border-gray-100">
@@ -76,26 +90,59 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
+              {/* Discounts */}
+              <div className="mt-6 space-y-3">
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-900">Discounts</h3>
+                  <p className="text-xs text-gray-500">Apply a promo code to get instant savings.</p>
+                </div>
+                <div className="flex gap-3">
+                  <input
+                    type="text"
+                    value={promo}
+                    onChange={(e) => setPromo(e.target.value)}
+                    placeholder="Enter Promo Code"
+                    className="flex-1 px-4 py-2 text-sm rounded-lg border border-gray-300 bg-gray-50 focus:outline-none"
+                  />
+                  <Button onClick={applyPromo} className="bg-[#d6322f] hover:bg-[#c22b28] text-white px-6">Apply</Button>
+                </div>
+                {discountPct > 0 && (
+                  <div className="inline-flex items-center gap-2 text-green-700 bg-green-50 border border-green-200 px-3 py-1 rounded-md text-xs">
+                    <span className="font-semibold">Discount Applied:</span> 10% OFF
+                  </div>
+                )}
+              </div>
+
               {/* Total */}
-              <div className="flex justify-between items-center py-4 bg-purple-50 px-4 rounded-lg mt-6">
-                <span className="font-bold text-gray-900">Total Price:</span>
-                <span className="text-2xl font-bold text-purple-600">${selectedPlan.price}</span>
+              <div className="mt-6 space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-700">Subtotal</span>
+                  <span className="font-semibold text-gray-900">${subtotal.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-700">Discount (DS)</span>
+                  <span className="font-semibold text-green-600">-{discountAmount.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between items-center py-3 bg-red-50 px-4 rounded-lg">
+                  <span className="font-bold text-gray-900">Total Price:</span>
+                  <span className="text-xl font-bold text-[#d6322f]">${total.toFixed(2)}</span>
+                </div>
               </div>
             </div>
 
             {/* Payment Options */}
             <div className="space-y-4 mb-8">
               {/* PayPal Info Box */}
-              <div className="border-2 border-purple-600 rounded-lg p-4 flex items-center gap-3 bg-purple-50">
+              <div className="border-2 border-[#d6322f] rounded-lg p-4 flex items-center gap-3 bg-red-50">
                 <div className="text-2xl">🅿️</div>
-                <span className="text-purple-900 font-semibold">Pay Securely via PayPal</span>
+                <span className="text-red-900 font-semibold">Pay Securely via PayPal</span>
               </div>
 
               {/* Pay Button */}
               <Button
                 onClick={handlePayment}
                 disabled={isProcessing}
-                className="w-full bg-purple-600 hover:bg-purple-700 text-white py-4 text-lg font-semibold rounded-lg flex items-center justify-center gap-2 transition-all"
+                className="w-full bg-[#d6322f] hover:bg-[#c22b28] text-white py-4 text-lg font-semibold rounded-lg flex items-center justify-center gap-2 transition-all"
               >
                 <Lock className="w-5 h-5" />
                 {isProcessing ? "Processing Payment..." : "Pay Securely with PayPal"}
@@ -120,7 +167,7 @@ export default function CheckoutPage() {
               </p>
 
               <div className="text-center">
-                <button className="text-purple-600 hover:text-purple-700 font-semibold text-sm flex items-center justify-center gap-1 mx-auto">
+                <button className="text-[#d6322f] hover:text-[#c22b28] font-semibold text-sm flex items-center justify-center gap-1 mx-auto">
                   What happens after I pay? →
                 </button>
               </div>

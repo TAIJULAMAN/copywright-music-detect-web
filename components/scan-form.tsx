@@ -26,7 +26,7 @@ export default function ScanForm() {
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-8 md:p-12 mb-12">
+    <div className="bg-white rounded-2xl shadow-lg ring-1 ring-black/5 p-8 md:p-12 mb-12">
       <div className="mb-8">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Paste Your Profile Link</h2>
         <p className="text-gray-600">Enter your Instagram profile URL to begin the scan</p>
@@ -40,7 +40,7 @@ export default function ScanForm() {
             placeholder="Paste your profile link"
             value={profileLink}
             onChange={(e) => setProfileLink(e.target.value)}
-            className="w-full px-4 py-3 text-lg rounded-lg border border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all"
+            className="w-full px-4 py-3 text-lg rounded-lg border border-gray-300 bg-gray-50 transition-all"
           />
           <Search className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
         </div>
@@ -52,14 +52,16 @@ export default function ScanForm() {
         </div>
 
         {/* Scan Button */}
-        <Button
-          type="submit"
-          disabled={isLoading || !profileLink.trim()}
-          className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 text-lg font-semibold rounded-lg flex items-center justify-center gap-2 transition-all"
-        >
-          <Search className="w-5 h-5" />
-          {isLoading ? "Scanning..." : "Start Scan"}
-        </Button>
+        <div className="flex justify-center">
+          <Button
+            type="submit"
+            disabled={isLoading || !profileLink.trim()}
+            className="w-[200px] bg-[#d6322f] text-white py-3 text-lg font-semibold rounded-lg flex items-center justify-center gap-2 transition-all"
+          >
+            <Search className="w-5 h-5" />
+            {isLoading ? "Scanning..." : "Start Scan"}
+          </Button>
+        </div>
       </form>
     </div>
   )

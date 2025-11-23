@@ -59,7 +59,6 @@ export default function VerifyOTPPage() {
 
   return (
     <>
-      <Header />
       <main className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <Card className="w-full max-w-md">
           <CardHeader className="space-y-2">
@@ -111,7 +110,6 @@ export default function VerifyOTPPage() {
           </CardContent>
         </Card>
       </main>
-      <Footer />
     </>
   )
 }
