@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
+import { Button } from "./ui/button";
 
 export default function Blog() {
   const posts = [
@@ -46,9 +47,7 @@ export default function Blog() {
                 <div className="bg-purple-600 text-white px-3 py-1 rounded text-sm font-semibold">
                   Recent
                 </div>
-                <span className="text-white text-sm font-medium">
-                  Articles
-                </span>
+                <span className="text-white text-sm font-medium">Articles</span>
               </div>
             </div>
             <Link
@@ -80,7 +79,7 @@ export default function Blog() {
                   href="#"
                   className="text-white text-sm font-semibold flex items-center gap-2"
                 >
-                  Read the article <ArrowRight className="w-3 h-3" />
+                  <Button className="bg-white text-black">Read the article</Button>
                 </Link>
               </article>
             ))}
