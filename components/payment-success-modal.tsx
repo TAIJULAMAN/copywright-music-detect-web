@@ -73,6 +73,33 @@ export default function PaymentSuccessModal({
           </p>
         </div>
 
+        <div className="rounded-lg border border-gray-200 p-4 text-left space-y-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-500">Invoice</p>
+              <p className="font-semibold text-gray-900">#CW-2025-0001</p>
+            </div>
+            <div className="text-right">
+              <p className="text-sm text-gray-500">Date</p>
+              <p className="font-medium text-gray-900">{new Date().toLocaleDateString()}</p>
+            </div>
+          </div>
+          <div className="border-t border-gray-200 pt-3 space-y-2">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-gray-700">Instagram Reels Copyright Scan</span>
+              <span className="text-gray-900 font-medium">$9.99</span>
+            </div>
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-gray-500">Payment Method</span>
+              <span className="text-gray-700">PayPal</span>
+            </div>
+          </div>
+          <div className="border-t border-gray-200 pt-3 flex items-center justify-between">
+            <span className="text-sm font-semibold text-gray-900">Total Paid</span>
+            <span className="text-base font-bold text-gray-900">$9.99</span>
+          </div>
+        </div>
+
         {/* View Results Button */}
         <Button
           onClick={handleViewResults}

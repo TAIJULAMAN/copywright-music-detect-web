@@ -6,6 +6,15 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Menu } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
+} from "@/components/ui/dropdown-menu";
 import {
   Sheet,
   SheetContent,
@@ -116,24 +125,74 @@ export default function Header() {
               </button>
             </div>
 
-            {isLoggedIn && user && (
-              <>
-                <span className="text-sm text-gray-300">Welcome, {user.name}</span>
-                <Button
-                  onClick={handleLogout}
-                  variant="outline"
-                  className="text-red-500 border-red-500 hover:bg-red-50 bg-transparent"
-                >
-                  Logout
-                </Button>
-              </>
-            )}
-
             <Link href="/scan">
               <Button className="bg-red-600 hover:bg-red-700 text-white">
                 Check My Reels Now
               </Button>
             </Link>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger className="outline-none">
+                <Avatar className="size-8">
+                  <AvatarImage
+                    src={"https://avatar.iran.liara.run/public/31"}
+                    alt={user?.name || "User"}
+                  />
+                  <AvatarFallback className="text-xs font-semibold text-[#1b2149] bg-white">
+                    {user?.name
+                      ?.split(" ")
+                      .map((n) => n[0])
+                      .join("")
+                      ?.slice(0, 2)
+                      .toUpperCase() || "GU"}
+                  </AvatarFallback>
+                </Avatar>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="min-w-52">
+                {isLoggedIn && user ? (
+                  <>
+                    <DropdownMenuLabel>
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium text-gray-900">
+                          {user.name}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          {user.email}
+                        </span>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <a href="#">Profile</a>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <a href="/checkout">Billing</a>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onSelect={(e) => {
+                        e.preventDefault();
+                        handleLogout();
+                      }}
+                      variant="destructive"
+                    >
+                      Logout
+                    </DropdownMenuItem>
+                  </>
+                ) : (
+                  <>
+                    <DropdownMenuItem asChild>
+                      <a href="/invoices">Invoices</a>
+                    </DropdownMenuItem>
+                    <DropdownMenuLabel>Profile</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <a href="/">Logout</a>
+                    </DropdownMenuItem>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           {/* Mobile Menu */}
@@ -203,21 +262,55 @@ export default function Header() {
                       </button>
                     </div>
 
-                    {isLoggedIn && user && (
-                      <Button
-                        onClick={handleLogout}
-                        variant="outline"
-                        className="text-red-500 border-red-500 hover:bg-red-50 bg-transparent w-full"
-                      >
-                        Logout
-                      </Button>
-                    )}
-
                     <Link href="/scan" onClick={() => setMobileMenuOpen(false)}>
                       <Button className="bg-red-600 hover:bg-red-700 text-white w-full">
                         Check My Reels Now
                       </Button>
                     </Link>
+
+                    <div className="flex flex-col gap-3">
+                      <div className="flex items-center gap-3">
+                        <Avatar className="size-9">
+                          <AvatarImage
+                            src="https://avatar.iran.liara.run/public/31"
+                            alt="User"
+                          />
+                          <AvatarFallback className="text-sm font-semibold text-[#1b2149] bg-white">
+                            {user?.name
+                              ?.split(" ")
+                              .map((n) => n[0])
+                              .join("")
+                              ?.slice(0, 2)
+                              .toUpperCase() || "GU"}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col">
+                          {user ? (
+                            <>
+                              <span className="text-sm font-medium text-gray-900">
+                                {user.name}
+                              </span>
+                              <span className="text-xs text-gray-500">
+                                {user.email}
+                              </span>
+                            </>
+                          ) : (
+                            <span className="text-sm font-medium text-gray-900">
+                              Guest User
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      {isLoggedIn && user && (
+                        <Button
+                          onClick={handleLogout}
+                          variant="outline"
+                          className="text-red-500 border-red-500 hover:bg-red-50 bg-transparent w-full"
+                        >
+                          Logout
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 </div>
               </SheetContent>
