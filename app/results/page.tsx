@@ -2,8 +2,49 @@
 
 import { Button } from "@/components/ui/button";
 import { Download, RotateCcw, Shield } from "lucide-react";
+import { useState } from "react";
 
 export default function ResultsPage() {
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const handleDownloadReport = async () => {
+    try {
+      setIsDownloading(true);
+      const response = await fetch('/api/report');
+      
+      if (!response.ok) {
+        throw new Error('Failed to download report');
+      }
+      
+      // Get the filename from the Content-Disposition header or use a default one
+      const contentDisposition = response.headers.get('content-disposition');
+      const filename = contentDisposition 
+        ? contentDisposition.split('filename=')[1].replace(/"/g, '') 
+        : `copyright-report-${new Date().toISOString().split('T')[0]}.csv`;
+      
+      // Create a blob from the response
+      const blob = await response.blob();
+      
+      // Create a temporary URL for the blob
+      const url = window.URL.createObjectURL(blob);
+      
+      // Create a temporary anchor element to trigger the download
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      
+      // Clean up
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error('Error downloading report:', error);
+      // You might want to show an error toast/message here
+    } finally {
+      setIsDownloading(false);
+    }
+  };
   const safeReels = 3;
   const flaggedReels = 1;
 
@@ -55,7 +96,7 @@ export default function ResultsPage() {
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       {/* Header */}
       <div className="border-b bg-white mt-20">
-        <div className="container mx-auto px-5 lg:px-0 py-4 flex items-center justify-between">
+        <div className="container mx-auto px-5 lg:px-0 py-4 flex flex-col lg:flex-row gap-5 lg:gap-0 items-start lg:items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
               Your Copyright Check Results
@@ -175,21 +216,34 @@ export default function ResultsPage() {
                   >
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <button className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 flex-shrink-0" aria-label="Play">
-                          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                        <button
+                          className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 flex-shrink-0"
+                          aria-label="Play"
+                        >
+                          <svg
+                            className="w-4 h-4"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                          >
                             <path d="M8 5v14l11-7z" />
                           </svg>
                         </button>
                         <div>
-                          <p className="font-medium text-gray-900">{reel.name}</p>
+                          <p className="font-medium text-gray-900">
+                            {reel.name}
+                          </p>
                           <p className="text-xs text-gray-500">{reel.size}</p>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       <div>
-                        <p className="font-medium text-gray-900">{reel.audio}</p>
-                        <p className="text-xs text-gray-500">ID: {reel.audioId}</p>
+                        <p className="font-medium text-gray-900">
+                          {reel.audio}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          ID: {reel.audioId}
+                        </p>
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -206,15 +260,29 @@ export default function ResultsPage() {
                     </td>
                     <td className="px-6 py-4">
                       <div>
-                        <p className={`text-sm ${reel.status === "safe" ? "text-gray-900" : "text-red-700"}`}>{reel.reason}</p>
+                        <p
+                          className={`text-sm ${
+                            reel.status === "safe"
+                              ? "text-gray-900"
+                              : "text-red-700"
+                          }`}
+                        >
+                          {reel.reason}
+                        </p>
                         {reel.copyright && (
-                          <p className="text-xs text-gray-500">{reel.copyright}</p>
+                          <p className="text-xs text-gray-500">
+                            {reel.copyright}
+                          </p>
                         )}
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2 text-green-600 text-sm font-medium">
-                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <svg
+                          className="w-4 h-4"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
                           <path d="M9 22h9a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-5l.54-2.17.02-.1c.05-.26.02-.53-.08-.77l-1-2.33A1 1 0 0 0 11.6 3H11a3 3 0 0 0-3 3v11H5a1 1 0 0 0 0 2h4v3z" />
                         </svg>
                         {reel.action}
@@ -229,9 +297,25 @@ export default function ResultsPage() {
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button className="bg-red-600 text-white px-8 py-3 rounded-lg font-semibold flex items-center justify-center gap-2">
-            <Download className="w-5 h-5" />
-            Download Report (PDF/CSV)
+          <Button 
+            onClick={handleDownloadReport}
+            disabled={isDownloading}
+            className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition-colors"
+          >
+            {isDownloading ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Generating...
+              </>
+            ) : (
+              <>
+                <Download className="w-5 h-5" />
+                Download Report (CSV)
+              </>
+            )}
           </Button>
           <Button
             variant="outline"
@@ -240,6 +324,45 @@ export default function ResultsPage() {
             <RotateCcw className="w-5 h-5" />
             Request Recheck
           </Button>
+        </div>
+      </div>
+
+      {/* Disclaimer Section */}
+      <div className="bg-blue-50 border-l-4 border-blue-400 p-5 rounded-lg my-10 container mx-auto px-5 lg:px-0">
+        <div className="flex items-start gap-3">
+          <div className="flex-shrink-0">
+            <svg
+              className="w-5 h-5 text-blue-600"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fillRule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h2a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold text-blue-800 mb-2">
+              Disclaimer
+            </h3>
+            <p className="text-xs text-blue-700">
+              This report is provided solely for informational and educational
+              purposes. It should not be interpreted as legal advice or a
+              substitute for consultation with a qualified attorney. Although we
+              make every effort to ensure the accuracy and completeness of the
+              information presented, we cannot guarantee that all copyrighted
+              materials, potential infringements, or intellectual property
+              issues have been fully identified or assessed. Copyright laws can
+              be complex and may vary by jurisdiction, and interpretations can
+              differ based on specific facts and circumstances. If you require
+              guidance on copyright ownership, infringement risks, licensing, or
+              any other legal considerations, we strongly recommend consulting
+              with a licensed legal professional who can provide advice tailored
+              to your particular situation.
+            </p>
+          </div>
         </div>
       </div>
     </div>
