@@ -1,0 +1,232 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Lock } from "lucide-react";
+import PaymentSuccessModal from "@/components/payment-success-modal";
+import Image from "next/image";
+
+interface Plan {
+  name: string;
+  price: number;
+}
+
+export default function CheckoutPage() {
+  const router = useRouter();
+  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [promo, setPromo] = useState("");
+  const [discountPct, setDiscountPct] = useState<number>(0);
+
+  useEffect(() => {
+    // Load selected plan from session storage
+    const planData = sessionStorage.getItem("selectedPlan");
+    if (planData) {
+      setSelectedPlan(JSON.parse(planData));
+    }
+  }, []);
+
+  const handlePayment = async () => {
+    setIsProcessing(true);
+    // Simulate payment processing
+    setTimeout(() => {
+      setIsProcessing(false);
+      setShowSuccessModal(true);
+    }, 2000);
+  };
+
+  if (!selectedPlan) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Loading...
+      </div>
+    );
+  }
+
+  const subtotal = selectedPlan.price;
+  const discountAmount = Math.round(subtotal * discountPct * 100) / 100;
+  const total = Math.max(subtotal - discountAmount, 0);
+
+  const applyPromo = () => {
+    const code = promo.trim().toUpperCase();
+    if (code === "SAVE10" || code === "DISCOUNT10") {
+      setDiscountPct(0.1);
+    } else {
+      setDiscountPct(0);
+    }
+  };
+
+  return (
+    <>
+      <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-2xl mx-auto">
+          {/* Header */}
+          <div className="text-center mb-12">
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Complete Your Payment to Receive the Results
+            </h1>
+            <p className="text-gray-600">
+              Pay $29 for one account or $39 for double accounts.
+            </p>
+          </div>
+
+          {/* Payment Card */}
+          <div className="bg-white rounded-2xl shadow-lg ring-1 ring-black/5 p-8 md:p-10 mb-8">
+            {/* Order Summary */}
+            <div className="mb-8">
+              <h2 className="text-xl font-bold text-gray-900 mb-6">
+                You're About to Purchase
+              </h2>
+
+              <div className="space-y-4 border-b border-gray-200 pb-6">
+                <div className="flex justify-between items-center py-3 border-b border-gray-100">
+                  <span className="text-gray-700">Selected Plan:</span>
+                  <span className="font-semibold text-gray-900">
+                    {selectedPlan.name}
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center py-3 border-b border-gray-100">
+                  <span className="text-gray-700">Price:</span>
+                  <span className="font-semibold text-[#d6322f] text-lg">
+                    ${selectedPlan.price}
+                  </span>
+                </div>
+
+                {/* <div className="flex justify-between items-center py-3 border-b border-gray-100">
+                  <span className="text-gray-700">Reels Checked:</span>
+                  <span className="font-semibold text-gray-900">5 Reels</span>
+                </div> */}
+              </div>
+
+              {/* Discounts */}
+              <div className="mt-6 space-y-3">
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-900">
+                    Discounts
+                  </h3>
+                  <p className="text-xs text-gray-500">
+                    Apply a promo code to get instant savings.
+                  </p>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <input
+                    type="text"
+                    value={promo}
+                    onChange={(e) => setPromo(e.target.value)}
+                    placeholder="Enter Promo Code"
+                    className="w-full px-4 py-2 text-sm rounded-lg border border-gray-300 bg-gray-50 focus:outline-none"
+                  />
+                  <Button
+                    onClick={applyPromo}
+                    className="bg-[#d6322f] hover:bg-[#c22b28] text-white px-6 w-full sm:w-auto"
+                  >
+                    Apply
+                  </Button>
+                </div>
+                {discountPct > 0 && (
+                  <div className="inline-flex items-center gap-2 text-green-700 bg-green-50 border border-green-200 px-3 py-1 rounded-md text-xs">
+                    <span className="font-semibold">Discount Applied:</span> 10%
+                    OFF
+                  </div>
+                )}
+              </div>
+
+              {/* Total */}
+              <div className="mt-6 space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-700">Subtotal</span>
+                  <span className="font-semibold text-gray-900">
+                    ${subtotal.toFixed(2)}
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-700">Discount (DS)</span>
+                  <span className="font-semibold text-green-600">
+                    -{discountAmount.toFixed(2)}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center py-3 bg-red-50 px-4 rounded-lg">
+                  <span className="font-bold text-gray-900">Total Price:</span>
+                  <span className="text-xl font-bold text-[#d6322f]">
+                    ${total.toFixed(2)}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Payment Options */}
+            <div className="space-y-4 mb-8">
+              {/* PayPal Info Box */}
+              <div className="border-2 border-[#d6322f] rounded-lg p-4 flex items-center gap-3 bg-red-50">
+                <Image src="/paypal.png" alt="PayPal" width={20} height={20} />
+                <span className="text-red-900 font-semibold">
+                  Pay Securely via PayPal
+                </span>
+              </div>
+
+              {/* Pay Button */}
+              <Button
+                onClick={handlePayment}
+                disabled={isProcessing}
+                className="w-full bg-[#d6322f] text-white py-6 text-lg font-semibold rounded-lg flex items-center justify-center gap-2 transition-all"
+              >
+                <Lock className="w-5 h-5" />
+                {isProcessing
+                  ? "Processing Payment..."
+                  : "Pay Securely with PayPal"}
+              </Button>
+            </div>
+
+            {/* Security Info */}
+            <div className="bg-gray-50 rounded-lg p-6 space-y-4">
+              <div className="flex items-center justify-center gap-6">
+                <div className="flex items-center gap-2">
+                 <Image
+                    src="/ssl.png"
+                    alt="PayPal"
+                    width={20}
+                    height={20}
+                  />
+                  <span className="text-gray-700 font-semibold">
+                    SSL Encrypted
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Image
+                    src="/paypal.png"
+                    alt="PayPal"
+                    width={20}
+                    height={20}
+                  />
+                  <span className="text-gray-700 font-semibold">
+                    PayPal Secure
+                  </span>
+                </div>
+              </div>
+
+              <p className="text-center text-sm text-gray-600">
+                Your payment is securely processed through PayPal. We never
+                store your financial data.
+              </p>
+
+              <div className="text-center">
+                <button className="text-[#d6322f] font-semibold text-sm flex items-center justify-center gap-1 mx-auto">
+                  What happens after I pay?
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Payment Success Modal */}
+      <PaymentSuccessModal
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+      />
+    </>
+  );
+}
