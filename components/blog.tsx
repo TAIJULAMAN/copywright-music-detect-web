@@ -41,14 +41,12 @@ export default function Blog() {
           </p>
         </div>
         <div className="w-full px-5 lg:px-0 mt-5">
-          <div className="flex justify-between items-center mb-12">
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <div className="bg-purple-600 text-white px-3 py-1 rounded text-sm font-semibold">
-                  Recent
-                </div>
-                <span className="text-white text-sm font-medium">Articles</span>
+          <div className="flex justify-between items-center mb-10">
+            <div className="flex  items-center gap-2">
+              <div className="bg-purple-600 text-white px-3 py-1 rounded text-sm font-semibold">
+                Recent
               </div>
+              <span className="text-white text-sm font-medium">Articles</span>
             </div>
             <Link
               href="#"
@@ -79,7 +77,9 @@ export default function Blog() {
                   href="#"
                   className="text-white text-sm font-semibold flex items-center gap-2"
                 >
-                  <Button className="bg-white text-black">Read the article</Button>
+                  <Button className="bg-white text-black">
+                    Read the article
+                  </Button>
                 </Link>
               </article>
             ))}
