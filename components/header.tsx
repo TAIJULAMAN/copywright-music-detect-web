@@ -103,9 +103,9 @@ export default function Header() {
           {/* Desktop Navigation - Centered */}
           <nav className="hidden lg:flex absolute left-1/2 transform -translate-x-1/2">
             <div className="flex items-center gap-8">
-              <Link href="/" className="text-white hover:text-red-500 transition-colors">
+              {/* <Link href="/" className="text-white hover:text-red-500 transition-colors">
                 Home
-              </Link>
+              </Link> */}
               <Link href="/how-it-works" className="text-white hover:text-red-500 transition-colors">
                 How it Works
               </Link>

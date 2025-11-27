@@ -95,7 +95,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-gray-800 pt-8 text-center text-sm">
-          <p>&copy; © 2025 Social Media King. All rights reserved.</p>
+          <p>&copy; 2025 CopyrightChecker.de. All rights reserved.</p>
         </div>
       </div>
     </footer>

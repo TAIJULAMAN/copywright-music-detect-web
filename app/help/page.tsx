@@ -48,7 +48,7 @@ export default function HelpCenter() {
             <input
               type="text"
               placeholder="Search for help..."
-              className="w-full px-6 py-3 rounded-lg border border-gray-300 focus:outline-none focus:border-purple-600"
+              className="w-full px-6 py-3 rounded-lg border border-gray-300 focus:outline-none focus:border-red-600"
             />
           </div>
         </div>
@@ -76,7 +76,7 @@ export default function HelpCenter() {
                 <ul className="space-y-3">
                   {category.items.map((item, idx) => (
                     <li key={idx}>
-                      <a href="#" className="text-purple-600 hover:text-purple-700 text-sm">
+                      <a href="#" className="text-red-600 hover:text-red-700 text-sm">
                         {item}
                       </a>
                     </li>
@@ -88,11 +88,11 @@ export default function HelpCenter() {
         </div>
 
         {/* Contact Support */}
-        <div className="bg-purple-50 rounded-lg border border-purple-200 p-8 text-center">
+        <div className="bg-red-50 rounded-lg border border-red-200 p-8 text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Still need help?</h2>
           <p className="text-gray-600 mb-6">Can't find what you're looking for? Get in touch with our support team.</p>
           <Link href="/contact">
-            <Button className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-lg font-semibold">
+            <Button className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg font-semibold">
               Contact Support
             </Button>
           </Link>
